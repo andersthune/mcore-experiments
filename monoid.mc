@@ -12,8 +12,8 @@ lang Monoid
   | MAppend (a, b) -> mAppend (MAppend (mEval a, mEval b))
 
   sem mAlg =
-  | a & !(MVal b) -> mAlg (mEval a)
   | MVal a -> a
+  | a -> mAlg (mEval a)
 end
 
 lang Dual = Monoid
