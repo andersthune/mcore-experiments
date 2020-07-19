@@ -9,30 +9,31 @@ lang EndoDual = Endo + Dual
 lang Foldable = Monoid
   -- Foldables
   syn Fold = -- Fold a
-  | Fold t -- Fold (t a)
 
   sem fold =
   | fld -> foldMap identity fld
 
-  sem foldMap (f : a -> MVal) =
+  sem foldMap (f : a -> F) =
   | fld -> foldr (lam x. lam y. MAppend (f x, y)) (MEmpty ()) fld
 
   sem foldr (f : a -> b -> b) (z : b) =
   | fld -> use Endo in
-    mAlg (foldMap (lam x. MVal (f x)) fld) z
+    cata (foldMap (lam x. Val (f x)) fld) z
 
   sem foldl (f : b -> a -> b) (z : b) =
   | fld -> use EndoDual in
-    mAlg (foldMap (lam x. MVal (flip f x)) fld) z
+    cata (foldMap (lam x. Val (flip f x)) fld) z
 
   sem autoFold =
-  | fld -> foldMap (lam x. MVal x) fld
+  | fld -> foldMap (lam x. Val x) fld
 end
 
 lang FoldableSeq = Foldable
+  syn Fold =
+  | Seq [a]
   -- Sequences as foldables
   sem foldr (f : a -> b -> b) (z : b) =
-  | Fold l -> seq_foldr f z l
+  | Seq l -> seq_foldr f z l
 end
 
 lang SumSeq = Sum + FoldableSeq
@@ -41,14 +42,14 @@ lang ProdSeq = Prod + FoldableSeq
 mexpr
 
 use SumSeq in
-let x1 = mAlg (foldMap (lam x. MVal x) (Fold [1,2,3,4])) in
+let x1 = cata (foldMap (lam x. Val x) (Seq [1,2,3,4])) in
 use ProdSeq in
-let x2 = mAlg (foldMap (lam x. MVal x) (Fold [1,2,3,4])) in
-let x3 = mAlg (autoFold (Fold [1,2,3,4])) in
+let x2 = cata (foldMap (lam x. Val x) (Seq [1,2,3,4])) in
+let x3 = cata (autoFold (Seq [1,2,3,4])) in
 
 use FoldableSeq in
-let y1 = foldr concat "" (Fold ["Hello", " ", "World"]) in
-let y2 = foldr concat "" (Fold ["Hello", " ", "World"]) in
+let y1 = foldr concat "" (Seq ["Hello", " ", "World"]) in
+let y2 = foldr concat "" (Seq ["Hello", " ", "World"]) in
 
 utest x1 with 10 in
 utest x2 with 24 in
