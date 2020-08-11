@@ -1,13 +1,12 @@
 lang Functor
-  syn F =
+  syn Expr =
   sem fmap (f : a -> b) =
+  | a -> a
 end
 
 lang Algebra = Functor
-  syn F =
+  syn Expr =
   | Val a
-  sem fmap (f : a -> b) =
-  | a -> a
   -- alg : F a a -> a
   sem alg =
   | Val a -> a

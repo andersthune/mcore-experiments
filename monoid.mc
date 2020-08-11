@@ -2,7 +2,7 @@ include "functor.mc"
 
 lang Monoid = Algebra
   -- A general monoid
-  syn F =
+  syn Expr =
   | MEmpty ()
   | MAppend (b, b)
 
